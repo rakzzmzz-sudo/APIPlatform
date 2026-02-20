@@ -1,0 +1,1475 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  full_name         String?
+  organization_name String?
+  balance           Float    @default(0)
+  role              String   @default("user")
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+}
+
+model Industry {
+  id            String     @id @default(uuid())
+  industry_name String
+  customers     Customer[]
+}
+
+model CustomerSegment {
+  id           String     @id @default(uuid())
+  segment_name String
+  customers    Customer[]
+}
+
+model Customer {
+  id                           String                  @id @default(uuid())
+  company_name                 String
+  business_registration_number String?
+  industry_id                  String?
+  customer_segment_id          String?
+  website                      String?
+  phone_number                 String?
+  email                        String?
+  city                         String?
+  country                      String?
+  contract_value               Float                   @default(0)
+  customer_status              String                  @default("active")
+  contact_count                Int                     @default(0)
+  created_at                   DateTime                @default(now())
+  updated_at                   DateTime                @updatedAt
+  created_by                   String?
+  customer_segment             CustomerSegment?        @relation(fields: [customer_segment_id], references: [id])
+  industry                     Industry?               @relation(fields: [industry_id], references: [id])
+  activities                   CustomerActivity[]
+  health_scores                CustomerHealthScore[]
+  interactions                 CustomerInteraction[]
+  notes                        CustomerNote[]
+  revenue_metrics              CustomerRevenueMetric[]
+  support_tickets              CustomerSupportTicket[]
+}
+
+model CustomerHealthScore {
+  id                 String   @id @default(uuid())
+  customer_id        String
+  health_score       Int
+  health_status      String
+  engagement_score   Int
+  satisfaction_score Int
+  churn_risk_level   String
+  churn_probability  Int
+  calculated_at      DateTime @default(now())
+  customer           Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+}
+
+model CustomerInteraction {
+  id                  String   @id @default(uuid())
+  customer_id         String
+  interaction_type    String
+  interaction_channel String
+  subject             String
+  description         String?
+  outcome             String?
+  sentiment           String?
+  interaction_date    DateTime @default(now())
+  duration_minutes    Int      @default(0)
+  user_id             String?
+  customer            Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+}
+
+model CustomerSupportTicket {
+  id                 String   @id @default(uuid())
+  customer_id        String
+  ticket_number      String
+  ticket_subject     String
+  ticket_description String?
+  ticket_priority    String
+  ticket_status      String
+  ticket_category    String
+  created_at         DateTime @default(now())
+  created_by         String?
+  assigned_to        String?
+  customer           Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+}
+
+model CustomerActivity {
+  id                   String    @id @default(uuid())
+  customer_id          String
+  activity_type        String
+  activity_title       String
+  activity_description String?
+  activity_status      String
+  due_date             DateTime?
+  priority             String
+  completed_at         DateTime?
+  created_by           String?
+  assigned_to          String?
+  customer             Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+}
+
+model CustomerNote {
+  id           String   @id @default(uuid())
+  customer_id  String
+  note_title   String
+  note_content String
+  note_type    String
+  is_pinned    Boolean  @default(false)
+  created_at   DateTime @default(now())
+  created_by   String?
+  customer     Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+}
+
+model CustomerRevenueMetric {
+  id                        String   @id @default(uuid())
+  customer_id               String
+  total_revenue             Float    @default(0)
+  monthly_recurring_revenue Float    @default(0)
+  annual_recurring_revenue  Float    @default(0)
+  lifetime_value            Float    @default(0)
+  total_orders              Int      @default(0)
+  average_order_value       Float    @default(0)
+  customer                  Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+}
+
+model Platform {
+  id              String     @id @default(uuid())
+  platform_name   String     @unique
+  platform_type   String
+  name            String
+  icon            String
+  color           String
+  is_active       Boolean    @default(true)
+  total_messages  Int        @default(0)
+  total_campaigns Int        @default(0)
+  success_rate    Float      @default(0)
+  last_sync       DateTime   @default(now())
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+  campaigns       Campaign[]
+}
+
+model Campaign {
+  id                 String    @id @default(uuid())
+  campaign_name      String
+  campaign_type      String
+  status             String
+  platform_id        String
+  messages_sent      Int       @default(0)
+  messages_delivered Int       @default(0)
+  messages_failed    Int       @default(0)
+  success_rate       Float     @default(0)
+  created_at         DateTime  @default(now())
+  scheduled_at       DateTime?
+  completed_at       DateTime?
+  platform           Platform  @relation(fields: [platform_id], references: [id])
+
+  @@map("campaigns")
+}
+
+model SmsCampaign {
+  id                String       @id @default(uuid())
+  user_id           String?
+  campaign_name     String
+  status            String
+  total_recipients  Int
+  sent_recipients   Int
+  insent_recipients Int          @default(0)
+  duplicate_numbers Int          @default(0)
+  success_rate      Float        @default(0)
+  route_type        String?
+  sender_id         String?
+  message           String?
+  template_id       String?
+  recipient_source  String?
+  created_by        String?
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
+  messages          SmsMessage[]
+
+  @@map("sms_campaigns")
+}
+
+model SmsTemplate {
+  id            String   @id @default(uuid())
+  template_name String
+  category      String
+  description   String
+  content       String
+  variables     String
+  use_case      String?
+  is_default    Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("sms_templates")
+}
+
+model SmsConfiguration {
+  id           String   @id @default(uuid())
+  tenant_id    String?
+  gateway_name String
+  provider     String
+  protocol     String
+  status       String
+  is_active    Boolean  @default(true)
+  is_default   Boolean  @default(false)
+  smpp_config  String?
+  http_config  String?
+  credentials  String?
+  settings     String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("sms_configurations")
+}
+
+model SmsMessage {
+  id            String      @id @default(uuid())
+  campaign_id   String
+  phone_number  String
+  message       String
+  status        String      @default("pending")
+  error_message String?
+  sent_at       DateTime?
+  delivered_at  DateTime?
+  created_at    DateTime    @default(now())
+  campaign      SmsCampaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+
+  @@map("sms_messages")
+}
+
+model RcsCampaign {
+  id                String       @id @default(uuid())
+  user_id           String?
+  campaign_name     String
+  message_type      String?
+  sender_id         String?
+  message           String?
+  template_id       String?
+  recipient_source  String?
+  status            String
+  total_recipients  Int
+  valid_numbers     Int
+  invalid_numbers   Int          @default(0)
+  duplicate_numbers Int          @default(0)
+  created_by        String?
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
+  messages          RcsMessage[]
+
+  @@map("rcs_campaigns")
+}
+
+model RcsTemplate {
+  id              String   @id @default(uuid())
+  name            String
+  message_content String
+  category        String
+  description     String
+  media_url       String?
+  media_type      String?
+  buttons         String?
+  variables       String
+  use_case        String
+  is_default      Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("rcs_templates")
+}
+
+model RcsMessage {
+  id            String      @id @default(uuid())
+  campaign_id   String
+  phone_number  String
+  message       String
+  status        String      @default("pending")
+  error_message String?
+  sent_at       DateTime?
+  delivered_at  DateTime?
+  read_at       DateTime?
+  credits       Float?
+  error_code    String?
+  created_at    DateTime    @default(now())
+  campaign      RcsCampaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+
+  @@map("rcs_messages")
+}
+
+model WhatsAppCampaign {
+  id                String            @id @default(uuid())
+  user_id           String?
+  campaign_name     String
+  status            String
+  total_recipients  Int
+  valid_numbers     Int
+  invalid_numbers   Int               @default(0)
+  duplicate_numbers Int               @default(0)
+  success_rate      Float             @default(0)
+  sender_id         String?
+  message           String?
+  template_id       String?
+  recipient_source  String?
+  created_by        String?
+  created_at        DateTime          @default(now())
+  updated_at        DateTime          @updatedAt
+  media_type        String?
+  media_url         String?
+  messages          WhatsAppMessage[]
+
+  @@map("whatsapp_campaigns")
+}
+
+model WhatsAppTemplate {
+  id             String   @id @default(uuid())
+  name           String
+  body_content   String
+  category       String
+  language       String
+  description    String
+  header_type    String?
+  header_content String?
+  footer_text    String?
+  buttons        String?
+  variables      String
+  use_case       String?
+  is_default     Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("whatsapp_templates")
+}
+
+model WhatsAppMessage {
+  id            String           @id @default(uuid())
+  campaign_id   String
+  phone_number  String
+  message       String
+  status        String           @default("pending")
+  error_message String?
+  sent_at       DateTime?
+  delivered_at  DateTime?
+  read_at       DateTime?
+  created_at    DateTime         @default(now())
+  campaign      WhatsAppCampaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+
+  @@map("whatsapp_messages")
+}
+
+model WhatsAppConfig {
+  id                   String           @id @default(uuid())
+  tenant_id            String?
+  whatsapp_business_id String?
+  is_verified          Boolean          @default(false)
+  status               String           @default("pending")
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+  numbers              WhatsAppNumber[]
+
+  @@map("tenant_whatsapp_configs")
+}
+
+model WhatsAppNumber {
+  id                 String         @id @default(uuid())
+  whatsapp_config_id String
+  phone_number       String
+  is_active          Boolean        @default(true)
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
+  config             WhatsAppConfig @relation(fields: [whatsapp_config_id], references: [id], onDelete: Cascade)
+
+  @@map("tenant_whatsapp_numbers")
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  message    String
+  type       String
+  read       Boolean  @default(false)
+  created_at DateTime @default(now())
+}
+
+model MenuAccessControl {
+  id         String   @id @default(uuid())
+  user_id    String
+  menu_key   String
+  menu_name  String
+  is_enabled Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("menu_access_control")
+}
+
+model RcsAggregatorConfiguration {
+  id                          String   @id @default(uuid())
+  user_id                     String?
+  aggregator_name             String
+  aggregator_type             String
+  connection_type             String
+  rbm_api_endpoint            String?
+  rbm_region                  String?
+  rbm_supported_message_types String?
+  http_base_url               String?
+  http_method                 String?
+  http_content_type           String?
+  api_key                     String?
+  agent_id                    String?
+  additional_credentials      String?
+  rcs_agent_name              String?
+  rcs_agent_description       String?
+  rcs_brand_color             String?
+  max_throughput              Int?
+  rate_limit                  Int?
+  enable_sms_fallback         Boolean  @default(true)
+  enable_delivery_receipts    Boolean  @default(true)
+  is_active                   Boolean  @default(true)
+  is_default                  Boolean  @default(false)
+  verification_status         String   @default("pending")
+  created_at                  DateTime @default(now())
+  updated_at                  DateTime @updatedAt
+
+  @@map("rcs_aggregator_configurations")
+}
+
+model SampleWhatsAppConfig {
+  id                  String                 @id @default(uuid())
+  business_account_id String
+  business_name       String
+  industry            String
+  description         String
+  is_verified         Boolean                @default(false)
+  config_data         String?
+  created_at          DateTime               @default(now())
+  updated_at          DateTime               @updatedAt
+  phone_numbers       SampleWhatsAppNumber[]
+
+  @@map("sample_whatsapp_configs")
+}
+
+model SampleWhatsAppNumber {
+  id                       String               @id @default(uuid())
+  config_id                String
+  phone_number             String
+  display_phone_number     String?
+  verified_name            String?
+  code_verification_status String?
+  quality_rating           String?
+  is_active                Boolean              @default(true)
+  created_at               DateTime             @default(now())
+  updated_at               DateTime             @updatedAt
+  config                   SampleWhatsAppConfig @relation(fields: [config_id], references: [id], onDelete: Cascade)
+
+  @@map("sample_whatsapp_numbers")
+}
+
+model CbBot {
+  id               String    @id @default(uuid())
+  name             String
+  description      String?
+  type             String    @default("conversational")
+  status           String    @default("draft")
+  platform         String?
+  language         String    @default("en")
+  greeting_message String?
+  fallback_message String?
+  webhook_url      String?
+  configuration    String?
+  intents          String?
+  entities         String?
+  flows            String?
+  analytics        String?
+  created_by       String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  last_trained_at  DateTime?
+
+  @@map("cb_bots")
+}
+
+model CbMLConfig {
+  id                   String   @id @default(uuid())
+  bot_id               String
+  config_name          String
+  nlu_engine           String   @default("llm")
+  llm_provider         String   @default("openai")
+  llm_model            String   @default("gpt-3.5-turbo")
+  confidence_threshold Float    @default(0.7)
+  temperature          Float    @default(0.7)
+  max_tokens           Int      @default(500)
+  is_active            Boolean  @default(true)
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  @@map("cb_ml_configs")
+}
+
+model CbIntent {
+  id                  String   @id @default(uuid())
+  bot_id              String
+  intent_name         String
+  intent_display_name String
+  intent_description  String?
+  is_system_intent    Boolean  @default(false)
+  training_phrases    String   @default("[]")
+  action_type         String   @default("text")
+  is_active           Boolean  @default(true)
+  priority            Int      @default(5)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  @@map("cb_intents")
+}
+
+model CbEntity {
+  id                  String   @id @default(uuid())
+  bot_id              String
+  entity_name         String
+  entity_display_name String
+  entity_type         String   @default("list")
+  values              String?  @default("[]")
+  regex_pattern       String?
+  is_active           Boolean  @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  @@map("cb_entities")
+}
+
+model CbConversation {
+  id            String   @id @default(uuid())
+  bot_id        String
+  session_id    String   @unique
+  user_id       String
+  channel       String   @default("web")
+  status        String   @default("active")
+  message_count Int      @default(0)
+  started_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("cb_conversations")
+}
+
+model CbMessage {
+  id                String   @id @default(uuid())
+  conversation_id   String
+  message_type      String
+  message_text      String
+  detected_intent   String?
+  intent_confidence Float?
+  metadata          String?  @default("{}")
+  created_at        DateTime @default(now())
+
+  @@map("cb_messages")
+}
+
+model CbKnowledgeBase {
+  id           String   @id @default(uuid())
+  bot_id       String
+  title        String
+  content      String
+  content_type String   @default("article")
+  category     String?
+  tags         String?  @default("[]")
+  url          String?
+  is_active    Boolean  @default(true)
+  metadata     String?  @default("{}")
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("cb_knowledge_base")
+}
+
+model CbIntegration {
+  id               String   @id @default(uuid())
+  bot_id           String
+  integration_name String
+  integration_type String
+  status           String   @default("inactive")
+  config           String?  @default("{}")
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("cb_integrations")
+}
+
+model voice_agents {
+  id                String    @id @default(uuid())
+  name              String
+  description       String?
+  agent_type        String    @default("inbound")
+  status            String    @default("inactive")
+  voice_type        String    @default("female")
+  language          String    @default("en-US")
+  greeting_message  String?
+  transfer_number   String?
+  webhook_url       String?
+  personality       String?
+  knowledge_base    String?
+  skills            String?
+  prompts           String?
+  conversation_flow String?
+  escalation_rules  String?
+  analytics         String?
+  total_calls       Int       @default(0)
+  successful_calls  Int       @default(0)
+  avg_duration      Int       @default(0)
+  created_by        String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  last_trained_at   DateTime?
+
+  @@map("voice_agents")
+}
+
+model VideoApiProduct {
+  id               String   @id @default(uuid())
+  product_name     String
+  product_type     String
+  industry         String
+  description      String?
+  features         String?  @default("[]")
+  monthly_price    Float    @default(0)
+  per_minute_price Float    @default(0)
+  setup_fee        Float    @default(0)
+  max_participants Int      @default(0)
+  storage_gb       Int      @default(0)
+  api_calls_limit  Int      @default(0)
+  has_sdk          Boolean  @default(true)
+  has_api          Boolean  @default(true)
+  is_available     Boolean  @default(true)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("video_api_products")
+}
+
+model VideoApiPurchase {
+  id               String    @id @default(uuid())
+  user_id          String
+  product_id       String
+  api_key          String    @unique
+  sdk_access_token String?
+  status           String    @default("active")
+  usage_minutes    Int       @default(0)
+  storage_used_gb  Float     @default(0)
+  api_calls_used   Int       @default(0)
+  expires_at       DateTime?
+  purchased_at     DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  @@map("video_api_purchases")
+}
+
+model VideoTemplate {
+  id            String   @id @default(uuid())
+  template_name String
+  industry      String
+  template_type String
+  description   String?
+  features      String?  @default("[]")
+  configuration String?  @default("{}")
+  is_premium    Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("video_templates")
+}
+
+model MeetingAIConfiguration {
+  id                        String   @id @default(uuid())
+  user_id                   String
+  config_name               String
+  is_default                Boolean  @default(false)
+  enable_transcription      Boolean  @default(true)
+  enable_recording          Boolean  @default(false)
+  enable_ai_insights        Boolean  @default(false)
+  enable_action_items       Boolean  @default(false)
+  enable_sentiment_analysis Boolean  @default(false)
+  transcription_language    String   @default("en")
+  created_at                DateTime @default(now())
+  updated_at                DateTime @updatedAt
+
+  @@map("meeting_ai_configurations")
+}
+
+model VideoApiCapability {
+  id              String   @id @default(uuid())
+  capability_name String
+  description     String?
+  icon            String?
+  is_available    Boolean  @default(true)
+  display_order   Int      @default(0)
+  category        String?
+  created_at      DateTime @default(now())
+
+  @@map("video_api_capabilities")
+}
+
+model VideoRecording {
+  id                String    @id @default(uuid())
+  user_id           String
+  session_id        String
+  recording_name    String?
+  recording_url     String?
+  format            String    @default("mp4")
+  size_mb           Float     @default(0)
+  duration_seconds  Int       @default(0)
+  status            String    @default("completed")
+  started_at        DateTime  @default(now())
+  ended_at          DateTime?
+  transcription_url String?
+  summary           String?
+
+  @@map("video_recordings")
+}
+
+model RecordingAnalytics {
+  id           String   @id @default(uuid())
+  recording_id String   @unique
+  view_count   Int      @default(0)
+  engagement   Float    @default(0)
+  sentiment    String?
+  top_topics   String?  @default("[]")
+  created_at   DateTime @default(now())
+
+  @@map("recording_analytics")
+}
+
+model VideoRecordingConfig {
+  id                String   @id @default(uuid())
+  user_id           String
+  config_name       String
+  resolution        String   @default("720p")
+  is_default        Boolean  @default(false)
+  auto_record       Boolean  @default(false)
+  watermark_enabled Boolean  @default(false)
+  created_at        DateTime @default(now())
+
+  @@map("video_recording_configs")
+}
+
+model CloudStorageConfig {
+  id          String   @id @default(uuid())
+  user_id     String
+  provider    String   @default("aws")
+  bucket_name String
+  region      String?
+  is_default  Boolean  @default(false)
+  created_at  DateTime @default(now())
+
+  @@map("cloud_storage_configs")
+}
+
+model NetworkQualityMetric {
+  id                     String   @id @default(uuid())
+  room_uuid              String
+  participant_uuid       String
+  participant_id         String?  // Keep for backward compatibility if needed
+  bitrate_kbps           Int      @default(0)
+  latency_ms             Int      @default(0)
+  packet_loss_percentage Float    @default(0)
+  jitter_ms              Int      @default(0)
+  framerate              Int      @default(30)
+  resolution             String   @default("720p")
+  current_resolution     String?
+  quality_rating         String   @default("good") // excellent, good, fair, poor
+  quality_score          Int      @default(100)
+  round_trip_time_ms     Float    @default(0)
+  bandwidth_mbps         Float    @default(0)
+  bandwidth_kbps         Int?     // Keep for backward compatibility
+  packet_loss            Float?   // Keep for backward compatibility
+  adaptive_bitrate_active Boolean @default(false)
+  simulcast_layer        String?
+  measured_at            DateTime @default(now())
+  
+  video_call_participants VideoCallParticipant? @relation(fields: [participant_uuid], references: [id])
+
+  @@map("network_quality_metrics")
+}
+
+model VideoCallParticipant {
+  id               String    @id @default(uuid())
+  room_uuid        String
+  user_id          String?
+  participant_name String
+  peer_id          String    @unique
+  is_host          Boolean   @default(false)
+  audio_enabled    Boolean   @default(true)
+  video_enabled    Boolean   @default(true)
+  screen_sharing   Boolean   @default(false)
+  joined_at        DateTime  @default(now())
+  left_at          DateTime?
+
+  network_quality_metrics NetworkQualityMetric[]
+
+  @@map("video_room_participants")
+}
+
+model AdaptiveBitrateConfig {
+  id             String   @id @default(uuid())
+  min_bitrate    Int      @default(300)
+  max_bitrate    Int      @default(2500)
+  target_bitrate Int      @default(1200)
+  created_at     DateTime @default(now())
+
+  @@map("adaptive_bitrate_configs")
+}
+
+model SimulcastConfig {
+  id           String   @id @default(uuid())
+  is_default   Boolean  @default(true)
+  layers_count Int      @default(3)
+  created_at   DateTime @default(now())
+
+  @@map("simulcast_configs")
+}
+
+model BackgroundProcessingConfig {
+  id                    String   @id @default(uuid())
+  config_name           String
+  processing_type       String   @default("blur") // blur, replacement, loop
+  quality               String   @default("medium")
+  blur_intensity        Int      @default(15)
+  performance_mode      String   @default("balanced")
+  use_gpu_acceleration  Boolean  @default(false)
+  wasm_module_version   String   @default("v1.0.0")
+  is_default            Boolean  @default(false)
+  created_at            DateTime @default(now())
+
+  @@map("background_processing_configs")
+}
+
+model VirtualBackground {
+  id         String   @id @default(uuid())
+  name       String
+  image_url  String
+  category   String   @default("office")
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+
+  @@map("virtual_backgrounds")
+}
+
+model NoiseCancellationConfig {
+  id                      String   @id @default(uuid())
+  config_name             String
+  ai_model                String   @default("standard")
+  noise_suppression_level Int      @default(50)
+  filter_keyboard_typing  Boolean  @default(true)
+  filter_dog_barking      Boolean  @default(false)
+  filter_fan_noise        Boolean  @default(true)
+  voice_isolation         Boolean  @default(false)
+  is_default              Boolean  @default(false)
+  mode                    String?  // Keep for compatibility
+  created_at              DateTime @default(now())
+
+  @@map("noise_cancellation_configs")
+}
+
+model TranscriptionConfig {
+  id                         String   @id @default(uuid())
+  config_name                String
+  language                   String   @default("en-US")
+  ai_model                   String   @default("whisper")
+  enable_speaker_diarization Boolean  @default(false)
+  enable_punctuation         Boolean  @default(true)
+  enable_translation         Boolean  @default(false)
+  word_timestamps            Boolean  @default(false)
+  confidence_threshold       Float    @default(0.8)
+  is_default                 Boolean  @default(false)
+  engine                     String?  // Keep for compatibility
+  created_at                 DateTime @default(now())
+
+  @@map("transcription_configs")
+}
+
+model RtmpBroadcastConfig {
+  id                   String   @id @default(uuid())
+  config_name          String
+  stream_url           String
+  stream_key           String
+  platform             String   @default("youtube")
+  video_bitrate_kbps   Int      @default(4500)
+  audio_bitrate_kbps   Int      @default(128)
+  video_codec          String   @default("h264")
+  audio_codec          String   @default("aac")
+  video_resolution     String   @default("1080p")
+  framerate            Int      @default(30)
+  is_active            Boolean  @default(false)
+  created_at           DateTime @default(now())
+
+  @@map("rtmp_broadcast_configs")
+}
+
+model HlsStreamingConfig {
+  id                       String   @id @default(uuid())
+  config_name              String
+  cdn_provider             String   @default("cloudfront")
+  latency_mode             String   @default("standard")
+  segment_duration_seconds Int      @default(6)
+  playlist_length_segments Int      @default(10)
+  enable_adaptive_streaming Boolean @default(true)
+  max_viewers              Int?
+  enable_drm               Boolean  @default(false)
+  drm_provider             String?
+  is_active                Boolean  @default(false)
+  quality                  String?  // Keep for compatibility
+  created_at               DateTime @default(now())
+
+  @@map("hls_streaming_configs")
+}
+
+model BroadcastSession {
+  id                String   @id @default(uuid())
+  broadcast_name    String
+  room_id           String?
+  status            String   @default("scheduled")
+  viewer_count      Int      @default(0)
+  peak_viewer_count Int      @default(0)
+  started_at        DateTime?
+  ended_at          DateTime?
+  created_at        DateTime @default(now())
+
+  @@map("broadcast_sessions")
+}
+
+model AiProcessingAnalytics {
+  id                            String   @id @default(uuid())
+  session_id                    String?
+  processing_type               String
+  total_processing_time_seconds Int      @default(0)
+  cpu_usage_percentage          Float    @default(0)
+  gpu_usage_percentage          Float?
+  frames_processed              Int      @default(0)
+  error_count                   Int      @default(0)
+  quality_score                 Int      @default(0)
+  transcription_time            Int?     @default(0) // Keep for compatibility
+  summary_tokens                Int?     @default(0) // Keep for compatibility
+  sentiment_score               Float?   @default(0) // Keep for compatibility
+  created_at                    DateTime @default(now())
+
+  @@map("ai_processing_analytics")
+}
+
+model Meeting {
+  id                        String    @id @default(uuid())
+  host_user_id              String
+  meeting_title             String
+  meeting_description       String?
+  meeting_type              String    @default("video_conference")
+  scheduled_start_time      DateTime?
+  scheduled_end_time        DateTime?
+  actual_start_time         DateTime?
+  actual_end_time           DateTime?
+  duration_minutes          Int?
+  host_name                 String?
+  room_id                   String    @unique
+  room_url                  String?
+  meeting_link              String?
+  max_participants          Int       @default(100)
+  enable_transcription      Boolean   @default(true)
+  enable_recording          Boolean   @default(false)
+  enable_ai_summary         Boolean   @default(false)
+  enable_action_items       Boolean   @default(false)
+  enable_sentiment_analysis Boolean   @default(false)
+  transcription_language    String    @default("en")
+  participant_emails        String?
+  tags                      String?   @default("[]")
+  status                    String    @default("scheduled")
+  allow_screen_share        Boolean   @default(true)
+  allow_chat                Boolean   @default(true)
+  created_at                DateTime  @default(now())
+  updated_at                DateTime  @updatedAt
+
+  @@map("meetings")
+}
+
+model MeetingParticipant {
+  id                    String   @id @default(uuid())
+  meeting_id            String
+  participant_name      String
+  participant_email     String
+  role                  String   @default("participant")
+  joined_at             DateTime @default(now())
+  left_at               DateTime?
+  speaking_time_seconds Int      @default(0)
+  questions_asked       Int      @default(0)
+  reactions_count       Int      @default(0)
+  audio_enabled         Boolean  @default(true)
+  video_enabled         Boolean  @default(true)
+  connection_quality    String   @default("good")
+
+  @@map("meeting_participants")
+}
+
+model MeetingTranscript {
+  id                 String   @id @default(uuid())
+  meeting_id         String
+  segment_number     Int
+  speaker_name       String
+  transcript_text    String
+  start_time_seconds Float
+  end_time_seconds   Float
+  sentiment          String?
+  keywords           String?  @default("[]")
+  topics             String?  @default("[]")
+  is_question        Boolean  @default(false)
+
+  @@map("meeting_transcripts")
+}
+
+model MeetingActionItem {
+  id                 String   @id @default(uuid())
+  meeting_id         String
+  action_item_text   String
+  action_item_type   String   @default("task")
+  assigned_to        String?
+  due_date           DateTime?
+  priority           String   @default("medium")
+  status             String   @default("pending")
+  confidence_score   Float    @default(0)
+
+  @@map("meeting_action_items")
+}
+
+model MeetingSummary {
+  id               String   @id @default(uuid())
+  meeting_id       String
+  summary_type     String   @default("overview")
+  summary_text     String
+  key_points       String?  @default("[]")
+  decisions_made   String?  @default("[]")
+  next_steps       String?  @default("[]")
+  confidence_score Float    @default(0)
+
+  @@map("meeting_summaries")
+}
+
+model MeetingAnalytics {
+  id                           String   @id @default(uuid())
+  meeting_id                   String   @unique
+  total_participants           Int      @default(0)
+  peak_concurrent_participants Int      @default(0)
+  total_speaking_time_seconds  Int      @default(0)
+  engagement_score             Float    @default(0)
+  participation_balance        Float    @default(0)
+  action_items_count           Int      @default(0)
+
+  @@map("meeting_analytics")
+}
+
+model MeetingAIInsight {
+  id                  String   @id @default(uuid())
+  meeting_id          String
+  insight_type        String
+  insight_category    String
+  insight_title       String
+  insight_description String
+  importance_score    Float    @default(0)
+  confidence_level    Float    @default(0)
+
+  @@map("meeting_ai_insights")
+}
+
+model MeetingAIConfigurationLink {
+  id               String   @id @default(uuid())
+  meeting_id       String
+  configuration_id String
+  created_at       DateTime @default(now())
+
+  @@map("meeting_ai_configuration_links")
+}
+
+model VideoRoom {
+  id                     String    @id @default(uuid())
+  room_id                String    @unique
+  host_user_id           String
+  template_id            String?
+  room_name              String?
+  room_type              String?
+  max_participants       Int       @default(10)
+  duration_minutes       Int?
+  recording_enabled      Boolean   @default(false)
+  screen_sharing_enabled Boolean   @default(true)
+  whiteboard_enabled     Boolean   @default(true)
+  chat_enabled           Boolean   @default(true)
+  status                 String    @default("active")
+  started_at             DateTime  @default(now())
+  ended_at               DateTime?
+
+  @@map("video_rooms")
+}
+
+
+
+model VideoRoomSignal {
+  id           String   @id @default(uuid())
+  room_uuid    String
+  from_peer_id String
+  to_peer_id   String
+  signal_type  String
+  signal_data  String   @default("{}")
+  created_at   DateTime @default(now())
+
+  @@map("video_room_signals")
+}
+
+model CartItem {
+  id          String   @id @default(uuid())
+  user_id     String
+  item_type   String
+  item_data   String?  @default("{}")
+  quantity    Int      @default(1)
+  unit_price  Float    @default(0)
+  total_price Float    @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("cart_items")
+}
+
+model EmailCampaign {
+  id               String   @id @default(uuid())
+  campaign_name    String
+  campaign_type    String   @default("regular")
+  template_id      String?
+  subject_line     String
+  preview_text     String?
+  from_email       String
+  from_name        String?
+  reply_to_email   String?
+  status           String   @default("draft")
+  scheduled_at     DateTime?
+  started_at       DateTime?
+  completed_at     DateTime?
+  total_recipients Int      @default(0)
+  emails_sent      Int      @default(0)
+  emails_delivered Int      @default(0)
+  emails_opened    Int      @default(0)
+  emails_clicked   Int      @default(0)
+  ab_test_enabled  Boolean  @default(false)
+  ab_test_config   String?  @default("{}") // Store as JSON string for SQLite
+  tags             String?  @default("[]") // Store as JSON string for SQLite
+  created_by       String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("email_campaigns")
+}
+
+model EmailTemplate {
+  id                 String   @id @default(uuid())
+  template_name      String
+  template_category  String   @default("general")
+  subject_line       String
+  preview_text       String?
+  html_content       String
+  plain_text_content String?
+  template_variables String?  @default("[]") // Store as JSON string
+  thumbnail_url      String?
+  is_responsive      Boolean  @default(true)
+  created_by         String?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  @@map("email_templates")
+}
+
+model EmailContactList {
+  id          String   @id @default(uuid())
+  list_name   String
+  description String?
+  is_private  Boolean  @default(false)
+  tags        String?  @default("[]")
+  created_by  String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("email_contact_lists")
+}
+
+model EmailContact {
+  id                  String   @id @default(uuid())
+  email               String   @unique
+  first_name          String?
+  last_name           String?
+  phone_number        String?
+  company             String?
+  job_title           String?
+  country             String?
+  custom_fields       String?  @default("{}")
+  tags                String?  @default("[]")
+  subscription_status String   @default("subscribed")
+  source              String   @default("manual")
+  last_activity_at    DateTime?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  @@map("email_contacts")
+}
+
+model EmailContactListMember {
+  id         String   @id @default(uuid())
+  list_id    String
+  contact_id String
+  created_at DateTime @default(now())
+
+  @@unique([list_id, contact_id])
+  @@map("email_contact_list_members")
+}
+
+model EmailAutomationSequence {
+  id                   String   @id @default(uuid())
+  sequence_name        String
+  sequence_description String?
+  trigger_type         String   @default("manual")
+  trigger_event        String?
+  entry_conditions     String?  @default("{}")
+  is_active            Boolean  @default(true)
+  created_by           String?
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  @@map("email_automation_sequences")
+}
+
+model EmailProviderConfig {
+  id                  String    @id @default(uuid())
+  provider_name       String
+  provider_type       String    @default("smtp")
+  smtp_host           String?
+  smtp_port           Int?
+  smtp_username       String?
+  smtp_password       String?
+  smtp_encryption     String?
+  api_key             String?
+  api_secret          String?
+  sending_domain      String?
+  from_email          String
+  from_name           String?
+  daily_sending_limit Int       @default(1000)
+  is_verified         Boolean   @default(false)
+  is_active           Boolean   @default(true)
+  is_default          Boolean   @default(false)
+  last_verified_at    DateTime?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  @@map("email_provider_configs")
+}
+
+model EmailCampaignAnalytics {
+  id               String   @id @default(uuid())
+  campaign_id      String
+  date             DateTime @default(now())
+  emails_sent      Int      @default(0)
+  emails_delivered Int      @default(0)
+  emails_opened    Int      @default(0)
+  emails_clicked   Int      @default(0)
+  emails_bounced   Int      @default(0)
+  emails_spam      Int      @default(0)
+  unsubscribed     Int      @default(0)
+
+  @@map("email_campaign_analytics")
+}
+
+model EmailSendingQuota {
+  id            String   @id @default(uuid())
+  user_id       String
+  daily_limit   Int      @default(1000)
+  monthly_limit Int      @default(30000)
+  reset_date    DateTime
+  created_at    DateTime @default(now())
+
+  @@map("email_sending_quotas")
+}
+
+model EmailCampaignRecipient {
+  id            String    @id @default(uuid())
+  campaign_id   String
+  contact_id    String
+  email         String
+  status        String    @default("queued")
+  sent_at       DateTime?
+  delivered_at  DateTime?
+  opened_at     DateTime?
+  clicked_at    DateTime?
+  bounced_at    DateTime?
+  error_message String?
+
+  @@map("email_campaign_recipients")
+}
+
+model Product {
+  id          String        @id @default(uuid())
+  sku         String        @unique
+  name        String
+  description String
+  category    String
+  icon        String
+  status      String        @default("active")
+  features    String        @default("[]") // JSON string
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  tiers       ProductTier[]
+  subscriptions UserSubscription[]
+  docs          ProductDocumentation[]
+
+  @@map("products")
+}
+
+model ProductTier {
+  id            String   @id @default(uuid())
+  product_id    String
+  tier_name     String
+  tier_sku      String
+  description   String
+  price         Float
+  price_unit    String
+  setup_fee     Float    @default(0)
+  features      String   @default("{}") // JSON string
+  max_users     Int?
+  max_volume    Int?
+  support_level String   @default("Standard")
+  is_popular    Boolean  @default(false)
+  sort_order    Int      @default(0)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  product       Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@map("product_tiers")
+}
+
+model PaymentMethod {
+  id              String   @id @default(uuid())
+  user_id         String
+  card_type       String
+  last_four       String
+  expiry_month    String
+  expiry_year     String
+  cardholder_name String
+  is_primary      Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("payment_methods")
+}
+
+model Transaction {
+  id            String   @id @default(uuid())
+  user_id       String
+  amount        Float
+  currency      String   @default("MYR")
+  status        String   @default("pending")
+  type          String   @default("usage")
+  description   String
+  channel       String?
+  reference     String?
+  balance_after Float?
+  metadata      String?  @default("{}") // JSON string
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("transactions")
+}
+
+model ApiMarketplaceKey {
+  id            String   @id @default(uuid())
+  user_id       String
+  product_id    String
+  product_name  String
+  key_name      String   @default("My API Key")
+  api_key       String   @unique
+  environment   String   @default("production")
+  status        String   @default("active")
+  permissions   String?  @default("[]") // JSON string
+  usage_limit   Int?
+  usage_count   Int      @default(0)
+  last_used_at  DateTime?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("api_marketplace_keys")
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  user_id       String
+  order_number  String   @unique
+  status        String   @default("pending")
+  total_amount  Float
+  items         String?  @default("[]") // JSON string
+  completed_at  DateTime?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("orders")
+}
+
+model UserSubscription {
+  id            String   @id @default(uuid())
+  user_id       String
+  product_id    String
+  product_name  String
+  product       Product  @relation(fields: [product_id], references: [id])
+  status        String   @default("active")
+  billing_cycle String   @default("monthly")
+  amount        Float
+  currency      String   @default("MYR")
+  started_at    DateTime @default(now())
+  expires_at    DateTime?
+  auto_renew    Boolean  @default(true)
+  usage_count   Int      @default(0)
+  usage_limit   Int      @default(0)
+  license_key   String?
+  license_type  String?
+  features      String?  @default("{}") // JSON string
+  metadata      String?  @default("{}") // JSON string
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("user_subscriptions")
+}
+
+model UserOffer {
+  id                  String   @id @default(uuid())
+  user_id             String
+  offer_name          String
+  description         String?
+  discount_percentage Float
+  status              String   @default("active")
+  expires_at          DateTime?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  @@map("user_offers")
+}
+
+model ProductDocumentation {
+  id              String   @id @default(uuid())
+  product_id      String
+  doc_type        String
+  title           String
+  description     String
+  version         String   @default("1.0")
+  file_size       String
+  page_count      Int
+  pdf_url         String
+  cover_image_url String?
+  last_updated    DateTime @default(now())
+  downloads       Int      @default(0)
+  product         Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@map("product_documentation")
+}
+
+

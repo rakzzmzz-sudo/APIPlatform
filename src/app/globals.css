@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --icon-color: #40c706;
+    --scrollbar-color: rgba(57, 255, 20, 0.35);
+    --scrollbar-hover: rgba(57, 255, 20, 0.6);
+  }
+}
+
+/* ─── Custom Scrollbar (global) ─────────────────────────────── */
+
+/* Hide native scrollbar width in Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+*:hover {
+  scrollbar-color: var(--scrollbar-color) transparent;
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 99px;
+  transition: background 0.3s ease;
+}
+
+/* Show on hover of the scroll container */
+*:hover::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color);
+}
+
+*:hover::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
+
+/* Sidebar — fully hidden scrollbar (it should feel invisible) */
+nav ::-webkit-scrollbar {
+  width: 0px;
+}
+
+nav {
+  scrollbar-width: none;
+}
+

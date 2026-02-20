@@ -1,0 +1,42 @@
+2026-02-18T03:47:22.431Z - API Error: 
+Invalid `model.create()` invocation in
+/Users/rakzzm/Documents/Applications/CPaaS Platform/.next/dev/server/chunks/[root-of-the-server]__8c583425._.js:188:38
+
+  185         data: data
+  186     });
+  187 } else {
+→ 188     result = await model.create(
+Unique constraint failed on the fields: (`room_id`)
+Stack: PrismaClientKnownRequestError: 
+Invalid `model.create()` invocation in
+/Users/rakzzm/Documents/Applications/CPaaS Platform/.next/dev/server/chunks/[root-of-the-server]__8c583425._.js:188:38
+
+  185         data: data
+  186     });
+  187 } else {
+→ 188     result = await model.create(
+Unique constraint failed on the fields: (`room_id`)
+    at $n.handleRequestError (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/@prisma/client/runtime/library.js:121:7315)
+    at $n.handleAndLogRequestError (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async POST (/Users/rakzzm/Documents/Applications/CPaaS Platform/.next/dev/server/chunks/[root-of-the-server]__8c583425._.js:188:26)
+    at async AppRouteRouteModule.do (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)
+    at async AppRouteRouteModule.handle (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)
+    at async responseGenerator (/Users/rakzzm/Documents/Applications/CPaaS Platform/.next/dev/server/chunks/[root-of-the-server]__7e6b58c0._.js:14849:38)
+    at async AppRouteRouteModule.handleResponse (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:187713)
+    at async handleResponse (/Users/rakzzm/Documents/Applications/CPaaS Platform/.next/dev/server/chunks/[root-of-the-server]__7e6b58c0._.js:14912:32)
+    at async Module.handler (/Users/rakzzm/Documents/Applications/CPaaS Platform/.next/dev/server/chunks/[root-of-the-server]__7e6b58c0._.js:14965:13)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/base-server.js:1422:9)
+    at async DevServer.renderPageComponent (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/base-server.js:1524:32)
+    at async DevServer.pipeImpl (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/base-server.js:1018:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/next-server.js:395:17)
+    at async DevServer.handleRequestImpl (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/base-server.js:909:17)
+    at async /Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/dev/next-dev-server.js:387:20
+    at async Span.traceAsyncFn (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/trace/trace.js:157:20)
+    at async DevServer.handleRequest (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/dev/next-dev-server.js:383:24)
+    at async invokeRender (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/lib/router-server.js:248:21)
+    at async handleRequest (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/lib/router-server.js:447:24)
+    at async requestHandlerImpl (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/lib/router-server.js:496:13)
+    at async Server.requestListener (/Users/rakzzm/Documents/Applications/CPaaS Platform/node_modules/next/dist/server/lib/start-server.js:226:13)

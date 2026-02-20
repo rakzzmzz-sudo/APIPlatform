@@ -1,0 +1,5 @@
+{
+  "/[...slug]/page": "app/[...slug]/page.js",
+  "/api/db/[table]/route": "app/api/db/[table]/route.js",
+  "/page": "app/page.js"
+}
