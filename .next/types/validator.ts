@@ -87,6 +87,15 @@ type ApiRouteConfig = {
   type __Unused = __Check
 }
 
+// Validate ../../src/app/api/integrations/test/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/integrations/test">> = Specific
+  const handler = {} as typeof import("../../src/app/api/integrations/test/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 
 
 // Validate ../../src/pages/api/voice-agents/seed.ts

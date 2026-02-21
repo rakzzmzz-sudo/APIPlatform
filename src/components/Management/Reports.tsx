@@ -65,7 +65,7 @@ export default function Reports() {
   useEffect(() => {
     if (user) {
       db.from('products').select('id,sku,name,category').eq('status','active').order('name')
-        .then(({ data }) => { if (data) setDbProducts(data); });
+        .then(({ data }: { data: any }) => { if (data) setDbProducts(data); });
     }
   }, [user]);
 

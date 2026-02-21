@@ -1,0 +1,5 @@
+__turbopack_load_page_chunks__("/_error", [
+  "static/chunks/e721217ebb3f1ef6.js",
+  "static/chunks/ce1004844531ff8d.js",
+  "static/chunks/turbopack-7b6c1a1795073bf8.js"
+])

@@ -106,7 +106,7 @@ export default function VoiceAPI() {
       }
       
       const flow = {
-        alias: newInboundFlow.name,
+        alias: newInboundFlow.alias,
         number: newInboundFlow.number,
         greeting: newInboundFlow.greeting ||  'Welcome',
         routing: newInboundFlow.routing,
@@ -116,7 +116,7 @@ export default function VoiceAPI() {
       };
       
       setInboundFlows(prev => [...prev, flow]);
-      setNewInboundFlow({ name: '', number: '', greeting: '', routing: 'IVR Menu', hours: '' });
+      setNewInboundFlow({ alias: '', number: '', greeting: '', routing: 'IVR Menu', hours: '' });
       setShowInboundModal(false);
     };
 
@@ -228,8 +228,8 @@ export default function VoiceAPI() {
                   <label className="block text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Flow Name</label>
                   <input 
                     type="text" 
-                    value={newInboundFlow.name}
-                    onChange={(e) => setNewInboundFlow(prev => ({ ...prev, name: e.target.value }))}
+                    value={newInboundFlow.alias}
+                    onChange={(e) => setNewInboundFlow(prev => ({ ...prev, alias: e.target.value }))}
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#39FF14] transition-all" 
                     placeholder="e.g., Customer Support Line" 
                   />
@@ -2175,8 +2175,8 @@ struct ContentView: View {
                 <div>
                   <p className="text-sm text-slate-500 mb-2">Tracking Numbers</p>
                   <div className="flex flex-wrap gap-2">
-                    {viewingTrackingCampaign.trackingNumbers.map((num, idx) => (
-                      <span key={idx} className="px-3 py-1 bg-[#39FF14]/20/20 text-[#39FF14] rounded-full text-sm font-mono">
+                    {viewingTrackingCampaign.trackingNumbers.map((num: string, idx: number) => (
+                      <span key={idx} className="px-3 py-1 bg-[#39FF14]/20 text-[#39FF14] rounded-full text-sm font-mono">
                         {num}
                       </span>
                     ))}

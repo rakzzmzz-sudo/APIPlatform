@@ -17,7 +17,7 @@ interface IVRContextValue extends IVRContextState {
   
   // Node actions
   addNode: (node: IVRNode) => void;
-  updateNode: (nodeId: string, updates: Partial<IVRNode>) => void;
+  updateNode: (nodeId: string, updates: any) => void;
   deleteNode: (nodeId: string) => void;
   deleteNodes: (nodeIds: string[]) => void;
   
@@ -223,7 +223,7 @@ export function IVRProvider({ children }: IVRProviderProps) {
     });
   }, [saveToHistory]);
 
-  const updateNode = useCallback((nodeId: string, updates: Partial<IVRNode>) => {
+  const updateNode = useCallback((nodeId: string, updates: any) => {
     setState(prev => {
       if (!prev.project || !prev.currentPage) return prev;
       

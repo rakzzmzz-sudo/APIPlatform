@@ -450,7 +450,7 @@ function VoiceAPI() {
                 return;
             }
             const flow = {
-                alias: newInboundFlow.name,
+                alias: newInboundFlow.alias,
                 number: newInboundFlow.number,
                 greeting: newInboundFlow.greeting || 'Welcome',
                 routing: newInboundFlow.routing,
@@ -463,7 +463,7 @@ function VoiceAPI() {
                     flow
                 ]);
             setNewInboundFlow({
-                name: '',
+                alias: '',
                 number: '',
                 greeting: '',
                 routing: 'IVR Menu',
@@ -869,10 +869,10 @@ function VoiceAPI() {
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                 type: "text",
-                                                value: newInboundFlow.name,
+                                                value: newInboundFlow.alias,
                                                 onChange: (e)=>setNewInboundFlow((prev)=>({
                                                             ...prev,
-                                                            name: e.target.value
+                                                            alias: e.target.value
                                                         })),
                                                 className: "w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#39FF14] transition-all",
                                                 placeholder: "e.g., Customer Support Line"
@@ -6725,7 +6725,7 @@ struct ContentView: View {
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "flex flex-wrap gap-2",
                                                 children: viewingTrackingCampaign.trackingNumbers.map((num, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "px-3 py-1 bg-[#39FF14]/20/20 text-[#39FF14] rounded-full text-sm font-mono",
+                                                        className: "px-3 py-1 bg-[#39FF14]/20 text-[#39FF14] rounded-full text-sm font-mono",
                                                         children: num
                                                     }, idx, false, {
                                                         fileName: "[project]/src/components/Channels/VoiceAPI.tsx",
