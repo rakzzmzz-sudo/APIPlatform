@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { LogIn, Info } from 'lucide-react';
+
 
 export default function Login({ onToggle }: { onToggle: () => void }) {
   const [email, setEmail] = useState('');
@@ -22,10 +22,6 @@ export default function Login({ onToggle }: { onToggle: () => void }) {
     }
   };
 
-  const quickLogin = (email: string, password: string) => {
-    setEmail(email);
-    setPassword(password);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
@@ -84,35 +80,7 @@ export default function Login({ onToggle }: { onToggle: () => void }) {
             </button>
           </form>
 
-          <div className="mt-6 p-4 bg-slate-700/30 rounded-lg border border-slate-600/50">
-            <div className="flex items-start gap-2 mb-3">
-              <Info className="w-5 h-5 text-[#39FF14] flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-slate-300 mb-1">Demo Credentials</p>
-                <p className="text-xs text-slate-400">Click to quick login:</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <button
-                onClick={() => quickLogin('admin@cpaas.com', 'admin123')}
-                className="w-full text-left px-3 py-2 bg-slate-700/50 hover:bg-slate-600/50 rounded text-xs text-slate-300 transition-colors"
-              >
-                <span className="font-semibold text-[#39FF14]">Admin:</span> admin@cpaas.com / admin123
-              </button>
-              <button
-                onClick={() => quickLogin('presales@cpaas.com', 'presales123')}
-                className="w-full text-left px-3 py-2 bg-slate-700/50 hover:bg-slate-600/50 rounded text-xs text-slate-300 transition-colors"
-              >
-                <span className="font-semibold text-green-400">Presales:</span> presales@cpaas.com / presales123
-              </button>
-              <button
-                onClick={() => quickLogin('sales@cpaas.com', 'sales123')}
-                className="w-full text-left px-3 py-2 bg-slate-700/50 hover:bg-slate-600/50 rounded text-xs text-slate-300 transition-colors"
-              >
-                <span className="font-semibold text-[#39FF14]">Sales:</span> sales@cpaas.com / sales123
-              </button>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
