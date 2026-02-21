@@ -1,8 +1,0 @@
-{
-  "/[...slug]/page": "/[...slug]",
-  "/_global-error/page": "/_global-error",
-  "/_not-found/page": "/_not-found",
-  "/api/db/[table]/route": "/api/db/[table]",
-  "/api/integrations/test/route": "/api/integrations/test",
-  "/page": "/"
-}
